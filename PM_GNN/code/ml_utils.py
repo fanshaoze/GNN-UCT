@@ -155,7 +155,7 @@ def train(train_loader, val_loader, model, n_epoch, batch_size, num_node, device
     return model
 
 
-def get_effi_and_vout_with_model(test_loader, model, num_node, model_index, device):
+def get_effi_and_vout_with_model(test_loader, model, device, num_node, model_index):
     model.eval()
     accuracy = 0
     n_batch_test = 0
