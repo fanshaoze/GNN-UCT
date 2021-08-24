@@ -1,9 +1,9 @@
 import json
 
-from gen_topo_for_dateset import *
-from data_for_dateset import generate_topo_info
-from circuit_for_dateset import generate_circuit_info
-from topo_lists_for_dataset import generate_data_for_topo
+from PM_GNN.code.gen_topo_for_dateset import *
+from PM_GNN.code.data_for_dateset import generate_topo_info
+from PM_GNN.code.circuit_for_dateset import generate_circuit_info
+from PM_GNN.code.topo_lists_for_dataset import generate_data_for_topo
 
 
 def generate_topo_for_GNN_model(circuit_topo):
@@ -12,13 +12,13 @@ def generate_topo_for_GNN_model(circuit_topo):
     data_info = generate_topo_info(topo_data)
     circuit_info = generate_circuit_info(data_info)  # cki
 
-    with open('./database/analytic.csv', newline='') as f:
-        reader = csv.reader(f)
-        result_analytic = list(reader)
+    # with open('./database/analytic.csv', newline='') as f:
+    # reader = csv.reader(f)
+    # result_analytic = list(reader)
 
     dataset = {}
 
-    n_os = 100
+    # n_os = 100
 
     device_list = circuit_info["device_list"]
     num_dev = len(device_list) - 3
@@ -74,9 +74,14 @@ def generate_topo_for_GNN_model(circuit_topo):
                                "edge_attr": edge_attr,
                                "edge_attr0": edge_attr0,
                                "node_attr": node_attr,
+                               "duty_cycle": vect[device_name["Duty_Cycle"]],
+                               "rout": vect[device_name["Rout"]],
+                               "cout": vect[device_name["Cout"]],
+                               "freq": vect[device_name["Frequency"]]
                                }
         count = count + 1
     print('dataset: ', dataset)
+
     return dataset
 
 

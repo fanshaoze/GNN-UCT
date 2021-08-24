@@ -7,7 +7,7 @@ import numpy as np
 from transformer_SVGP.Models import get_model, GPModel
 from topo_envs.surrogateRewardSim import SurrogateRewardTopologySim
 
-from build_vocab import Vocabulary
+from transformer_SVGP.build_vocab import Vocabulary
 
 class TransformerRewardSim(SurrogateRewardTopologySim):
     def __init__(self, eff_model_file, vout_model_file, vocab_file, device, debug, *args):

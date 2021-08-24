@@ -14,7 +14,7 @@ import csv
 import numpy as np
 import copy as cp
 from ast import literal_eval
-from utils_new.graphUtils import indexed_graph_to_adjacency_matrix, adj_matrix_to_graph, graph_to_adjacency_matrix, \
+from PM_GNN.code.utils_new.graphUtils import indexed_graph_to_adjacency_matrix, adj_matrix_to_graph, graph_to_adjacency_matrix, \
     nodes_and_edges_to_adjacency_matrix, adj_matrix_to_edges
 
 
@@ -514,6 +514,54 @@ def find_same_designs(node_list, edge_list, net_list):
 
     return edge_list_group, net_list_group
 
+
+def key_circuit_from_lists(edge_list, node_list, net_list):
+    path = find_paths_from_edges(node_list, edge_list)
+
+    node_dic = {}
+    node_name = {}
+    net_list_dic = {}
+
+    for edge in edge_list:
+
+        edge_start = edge[0]
+        edge_end = edge[1]
+
+        if edge_end in node_dic:
+            node_dic[edge_end].append(edge_start)
+        else:
+            node_dic[edge_end] = []
+            node_dic[edge_end].append(edge_start)
+
+    for node in node_dic:
+
+        node_dic[node].sort()
+        name = 'N'
+
+        for comp in node_dic[node]:
+            name = name + '-' + comp
+
+        if node in node_name:
+            print('error')
+        else:
+            node_name[str(node)] = name
+
+    tmp = net_list
+    for item in tmp:
+
+        for index, node in enumerate(item):
+            if node == '0':
+                item[index] = '0'
+            elif node in node_name:
+                item[index] = node_name[node]
+        net_list_dic[item[0]] = item[1::]
+        net_list_dic[item[0]].sort()
+
+    net_list_dic_sorted = OrderedDict(sorted(net_list_dic.items()))
+
+    key = str(net_list_dic_sorted)
+
+    return key
 
 def key_circuit_for_single_topo(edge_list_first, node_list, net_list_first):
     edge_list_group, net_list_group = find_same_designs(node_list, edge_list_first, net_list_first)

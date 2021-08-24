@@ -5,7 +5,7 @@ import torch
 from algs.gp import GPModel
 from topo_envs.surrogateRewardSim import SurrogateRewardTopologySim
 
-from topo_data.embedding import tf_embed
+from topo_data_util.embedding import tf_embed
 
 import numpy as np
 

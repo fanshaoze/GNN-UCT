@@ -6,12 +6,12 @@ import time
 import sys
 import math
 import random
-from ucts import uct
-from ucts import TopoPlanner
+from UCT_for_CD_analytics.ucts import uct
+from UCT_for_CD_analytics.ucts import TopoPlanner
 import datetime
-from utils.util import mkdir, get_sim_configs, save_reward_hash, get_steps_traj, read_approve_path, \
+from UCT_for_CD_analytics.utils.util import mkdir, get_sim_configs, save_reward_hash, get_steps_traj, read_approve_path, \
     read_joint_component_prob
-from SimulatorAnalysis import UCT_data_collection
+from UCT_for_CD_analytics.SimulatorAnalysis import UCT_data_collection
 
 import gc
 
@@ -86,8 +86,11 @@ def get_action_from_trees_vote(uct_planner_list, uct_tree, tree_num=4):
     return selected_action
 
 
-def serial_UCF_test(depth_list, trajectory, configs, date_str):
-    key_expression = UCT_data_collection.key_expression_dict()
+def serial_UCF_test(depth_list, trajectory, configs, date_str, Sim=None, uct_tree_list=None, keep_uct_tree=False):
+    if Sim is None:
+        Sim = TopoPlanner.TopoGenSimulator
+    # key_expression = UCT_data_collection.key_expression_dict()
+    key_expression = {}
     out_file_name = "Results/mutitest_" + str(configs['target_vout']) + "-" + date_str + "-" + str(os.getpid()) + ".txt"
     figure_folder = "figures/" + date_str + "/"
     mkdir(figure_folder)
@@ -109,16 +112,19 @@ def serial_UCF_test(depth_list, trajectory, configs, date_str):
             fo.write("----------------------------------------------------------------------" + "\n")
             uct_simulators = []
             uct_tree_list = []
-            approved_path_freq = read_approve_path()
-            component_condition_prob = read_joint_component_prob(configs['num_component'])
+            # approved_path_freq = read_approve_path()
+            approved_path_freq = {}
+            # component_condition_prob = read_joint_component_prob(configs['num_component'])
+            component_condition_prob ={}
 
             steps = 0
             cumulate_plan_time = 0
             r = 0
             tree_size = 0
-
-            sim = TopoPlanner.TopoGenSimulator(sim_configs, approved_path_freq, component_condition_prob,
-                                               key_expression, configs['num_component'])
+            sim = Sim(sim_configs, approved_path_freq, component_condition_prob,
+                      key_expression, configs['num_component'])
+            # sim = TopoPlanner.TopoGenSimulator(sim_configs, approved_path_freq, component_condition_prob,
+            #                                    key_expression, configs['num_component'])
 
             uct_tree = uct.UCTPlanner(sim, max_depth, num_runs, configs["ucb_scalar"], configs["gamma"],
                                       configs["leaf_value"], configs["end_episode_value"],
@@ -128,8 +134,8 @@ def serial_UCF_test(depth_list, trajectory, configs, date_str):
             uct_tree_list.clear()
             for n in range(configs["tree_num"]):
                 uct_simulators.append(
-                    TopoPlanner.TopoGenSimulator(sim_configs, approved_path_freq, component_condition_prob,
-                                                 key_expression, configs['num_component']))
+                    Sim(sim_configs, approved_path_freq, component_condition_prob,
+                        key_expression, configs['num_component']))
 
                 uct_tree_list.append(
                     uct.UCTPlanner(uct_simulators[n], max_depth, int(num_runs / configs["tree_num"]),
@@ -140,22 +146,23 @@ def serial_UCF_test(depth_list, trajectory, configs, date_str):
 
             # For fixed commponent type
             init_nodes = []
-            # init_nodes = [0, 3, 1]
-            # for e in init_nodes:
-            #     action = TopoPlanner.TopoGenAction('node', e)
-            #     sim.act(action)
+            init_nodes = [0, 3, 1]
+            for e in init_nodes:
+                action = TopoPlanner.TopoGenAction('node', e)
+                sim.act(action, False)
             edges = []
             # adj = sim.get_adjust_parameter_set()
             # print(sim.get_adjust_parameter_set())
             # {2: {5}, 5: {2}, 1: {8}, 8: {1}, 0: {3}, 3: {0}, 4: {7}, 7: {4, 6}, 6: {7}})
-            # edges = [[0, 3], [1, 8], [2, 5], [4, 7], [6, 7]]
+            edges = [[0, 3], [1, 8], [2, 5], [4, 7], [6, 7]]
             # edges = [[0, 8], [1, 3], [2, 4], [4, 6], [5, 7]]
             # # # edges = [[0, 4], [1, 8], [2, 5]]
             # #
-            # for edge in edges:
-            #     action = TopoPlanner.TopoGenAction('edge', edge)
-            #     sim.act(action)
-            # return
+            for edge in edges:
+                action = TopoPlanner.TopoGenAction('edge', edge)
+                sim.act(action, False)
+            sim.get_reward()
+            return
             # topologies = [sim.get_state()]
             # nets_to_ngspice_files(topologies, configs, configs['num_component'])
             # simulate_topologies(len(topologies), configs['num_component'], configs["sys_os"])
@@ -302,11 +309,11 @@ def serial_UCF_test(depth_list, trajectory, configs, date_str):
             results.append(result)
             UCT_data_collection.save_analytics_result(uct_simulators[0].key_expression)
 
-            del sim
-            del uct_simulators
-            del uct_tree
-            del uct_tree_list
-            gc.collect()
+            # del sim
+            # del uct_simulators
+            # del uct_tree
+            # del uct_tree_list
+            # gc.collect()
 
     print("figures are saved in:" + str(figure_folder) + "\n")
     print("outputs are saved in:" + out_file_name + "\n")
@@ -319,4 +326,11 @@ def serial_UCF_test(depth_list, trajectory, configs, date_str):
     del key_expression
     del result
     gc.collect()
-    return
+    return {'sim': sim,
+            'time': (end_time - start_time).seconds,
+            'query_num': total_query,
+            'state_list': uct_tree_list[0].get_all_states(),
+            'uct_tree': uct_tree,
+            'uct_tree_list': uct_tree_list
+           }
+

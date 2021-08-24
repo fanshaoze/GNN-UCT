@@ -16,43 +16,34 @@ def generate_traj_lists(trajectories, test_number):
     return traj_lists
 
 
-def main(name):
-    # target_lists = []
-    target_vout_list = [-200, -50, 50, 200]
-    target_vout_list = [50]
+def main(name='', traj=None, Sim=None, args_file_name="config", uct_tree_list=None, keep_uct_tree=False):
+    mkdir("figures")
+    mkdir("Results")
+    configs = {}
+    get_args(args_file_name, configs)
+    configs["min_vout"] = configs["target_vout"] - configs["range_percentage"] * abs(configs["target_vout"])
+    configs["max_vout"] = configs["target_vout"] + configs["range_percentage"] * abs(configs["target_vout"])
+    depth_list = generate_depth_list(configs["dep_start"], configs["dep_end"], configs["dep_step_len"])
 
-    trajectories = [128]
-    test_number = 1
+    if traj is None:
+        traj_list = generate_traj_List(configs["traj_start"], configs["traj_end"], configs["traj_step_len"])
+    else:
+        traj_list = [traj]
 
-    traj_lists = generate_traj_lists(trajectories, test_number)
-
-    for try_target_vout in target_vout_list:
-        for traj_list in traj_lists:
-            mkdir("figures")
-            mkdir("Results")
-            configs = {}
-            args_file_name = "config"
-            get_args(args_file_name, configs)
-
-            # try_target_vout = 50
-            configs["target_vout"] = try_target_vout
-
-            configs["min_vout"] = configs["target_vout"] - configs["range_percentage"] * abs(configs["target_vout"])
-            configs["max_vout"] = configs["target_vout"] + configs["range_percentage"] * abs(configs["target_vout"])
-            depth_list = generate_depth_list(configs["dep_start"], configs["dep_end"], configs["dep_step_len"])
-            # traj_list = generate_traj_List(configs["traj_start"], configs["traj_end"], configs["traj_step_len"])
-            date_str = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
-            if configs["algorithm"] == "UCF":
-                serial_UCF_test(depth_list, traj_list, configs, date_str)
-            elif configs["algorithm"] == "GeneticSearch" or configs["algorithm"] == "GS":
-                genetic_search(configs, date_str)
-            elif configs["algorithm"] == "VIZ":
-                mkdir("Viz/TreeStructures")
-                viz_test(depth_list, traj_list, configs, date_str)
-            elif configs["algorithm"] == "ANA_TEST":
-                anay_read_test(configs)
-
-    return
+    # traj_list = [20, 21, 22, 23]
+    date_str = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S')
+    if configs["algorithm"] == "UCF":
+        if configs["root_parallel"] is False:
+            result = serial_UCF_test(depth_list, traj_list, configs, date_str, Sim=Sim,
+                                     uct_tree_list=uct_tree_list, keep_uct_tree=keep_uct_tree)
+    elif configs["algorithm"] == "GeneticSearch" or configs["algorithm"] == "GS":
+        genetic_search(configs, date_str)
+    elif configs["algorithm"] == "VIZ":
+        mkdir("Viz/TreeStructures")
+        viz_test(depth_list, traj_list, configs, date_str)
+    # elif configs["algorithm"] == "TEST":
+    #     hash_read_test(depth_list, traj_list, configs, date_str)
+    return result
 
 
 if __name__ == '__main__':

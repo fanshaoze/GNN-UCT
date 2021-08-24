@@ -6,10 +6,10 @@ import math
 
 from easydict import EasyDict
 
-from model import CircuitGNN, PT_GNN, MT_GNN
+from PM_GNN.code.model import CircuitGNN, PT_GNN, MT_GNN
 import copy
 
-from reward_fn import compute_batch_reward
+from PM_GNN.code.reward_fn import compute_batch_reward
 
 
 def rse(y, yt):
@@ -155,49 +155,30 @@ def train(train_loader, val_loader, model, n_epoch, batch_size, num_node, device
     return model
 
 
-def get_effi_and_vout_with_model(test_loader, model, device, num_node, model_index):
-    model.eval()
+def get_output_with_model(data, effi_model, device, num_node, model_index):
+    effi_model.eval()
     accuracy = 0
     n_batch_test = 0
-    gold_list = []
-    out_list = []
-    for data in test_loader:
-        data.to(device)
-        L = data.node_attr.shape[0]
-        B = int(L / num_node)
-        node_attr = torch.reshape(data.node_attr, [B, int(L / B), -1])
-        if model_index == 0:
-            edge_attr = torch.reshape(data.edge0_attr, [B, int(L / B), int(L / B), -1])
-        else:
-            edge_attr1 = torch.reshape(data.edge1_attr, [B, int(L / B), int(L / B), -1])
-            edge_attr2 = torch.reshape(data.edge2_attr, [B, int(L / B), int(L / B), -1])
+    data.to(device)
+    L = data.node_attr.shape[0]
+    B = int(L / num_node)
+    node_attr = torch.reshape(data.node_attr, [B, int(L / B), -1])
+    if model_index == 0:
+        edge_attr = torch.reshape(data.edge0_attr, [B, int(L / B), int(L / B), -1])
+    else:
+        edge_attr1 = torch.reshape(data.edge1_attr, [B, int(L / B), int(L / B), -1])
+        edge_attr2 = torch.reshape(data.edge2_attr, [B, int(L / B), int(L / B), -1])
 
-        adj = torch.reshape(data.adj, [B, int(L / B), int(L / B)])
-        y = data.label.cpu().detach().numpy()
+    adj = torch.reshape(data.adj, [B, int(L / B), int(L / B)])
+    # y = data.label.cpu().detach().numpy()
 
-        n_batch_test = n_batch_test + 1
-        if model_index == 0:
-            out = model(input=(node_attr.to(device), edge_attr.to(device), adj.to(device))).cpu().detach().numpy()
-        else:
-            out = model(input=(node_attr.to(device), edge_attr1.to(device), edge_attr2.to(device),
-                               adj.to(device))).cpu().detach().numpy()
-        out = out.reshape(y.shape)
-        assert (out.shape == y.shape)
-        out = np.array([x for x in out])
-        gold = np.array(y.reshape(-1))
-        gold = np.array([x for x in gold])
-
-        # gold list: ground truth
-        # out_list: predicted output
-        gold_list.extend(gold)
-        out_list.extend(out)
-
-        L = len(gold)
-        #             print(out,gold)
-        rse_result = rse(out, gold)
-        np.set_printoptions(precision=2, suppress=True)
-    #
-    print("Final RSE:", rse(np.reshape(out_list, -1), np.reshape(gold_list, -1)))
+    n_batch_test = n_batch_test + 1
+    if model_index == 0:
+        out = effi_model(input=(node_attr.to(device), edge_attr.to(device), adj.to(device))).cpu().detach().numpy()
+    else:
+        out = effi_model(input=(node_attr.to(device), edge_attr1.to(device), edge_attr2.to(device),
+                                adj.to(device))).cpu().detach().numpy()
+    return out
 
 
 def test(test_loader, model, n_epoch, batch_size, num_node, model_index, flag, device, th):

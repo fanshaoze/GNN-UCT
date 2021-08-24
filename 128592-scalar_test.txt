@@ -1,0 +1,14 @@
+round:3
+Ln(n):1.0986122886681098
+rave Ln(n):0
+graph:defaultdict(<class 'set'>, {})
+0 action:0 n' of:1.0 sqrt:1.048147073968205 Qv':0.0 avg:0.0
+1 action:1 n' of:1.0 sqrt:1.048147073968205 Qv':0.0 avg:0.0
++++++++++++++++++++++++++++++++++++++++++++
+round:4
+Ln(n):1.3862943611198906
+rave Ln(n):0
+graph:defaultdict(<class 'set'>, {})
+0 action:0 n' of:2.0 sqrt:0.8325546111576977 Qv':0.0 avg:0.0
+1 action:1 n' of:1.0 sqrt:1.1774100225154747 Qv':0.0 avg:0.0
++++++++++++++++++++++++++++++++++++++++++++

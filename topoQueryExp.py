@@ -7,8 +7,9 @@ import time
 import config
 from arguments import get_args
 
-sys.path.append(os.path.join(sys.path[0], 'topo_data'))
+sys.path.append(os.path.join(sys.path[0], 'topo_data_util'))
 sys.path.append(os.path.join(sys.path[0], 'transformer_SVGP'))
+sys.path.append(os.path.join(sys.path[0], 'PM_GNN/code'))
 
 if config.task == 'uct_3_comp':
     sys.path.append(os.path.join(sys.path[0], 'UCT_for_CD_analytics'))
@@ -48,7 +49,7 @@ def gp_reward_uct_exp(args):
         from topo_envs.GNNRewardSim import GNNRewardSim
 
         def sim_init(*a):
-            return GNNRewardSim('eff_model.pt', 'vout_model.pt', args.debug, *a)
+            return GNNRewardSim('reg_eff.pt', 'reg_vout.pt', args.debug, *a)
     else:
         raise Exception('unknown model ' + args.model)
 
@@ -92,7 +93,7 @@ def gp_reward_uct_exp(args):
                 surrogate_rewards = np.array([sim.get_reward(state) for state in cand_states])
                 # k topologies with highest surrogate rewards
                 candidate_indices = surrogate_rewards.argsort()[-args.k:]
-
+                # TODO replace effi vout using reward return
                 surrogate_top_k = [(sim.get_reward(cand_states[idx]), sim.get_surrogate_eff(cand_states[idx]), sim.get_surrogate_vout(cand_states[idx]))
                                    for idx in candidate_indices]
 

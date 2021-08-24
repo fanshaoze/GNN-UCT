@@ -42,7 +42,7 @@ def get_args():
     )
 
     parser.add_argument(
-        '--model', type=str, default='transformer', choices=['simulator', 'transformer', 'gp'], help='surrogate model'
+        '--model', type=str, default='gnn', choices=['simulator', 'transformer', 'gp'], help='surrogate model'
     )
     parser.add_argument(
         '--traj', nargs='+', type=int, default=[64], help='trajectory numbers'

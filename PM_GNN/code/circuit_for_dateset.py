@@ -1,4 +1,4 @@
-from gen_topo_for_dateset import *
+from PM_GNN.code.gen_topo_for_dateset import *
 
 
 def generate_circuit_info(data):

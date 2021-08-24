@@ -3,13 +3,13 @@ from abc import abstractmethod, ABC
 import config
 
 if config.task == 'uct_3_comp':
-    from UCFTopo_dev.ucts.TopoPlanner import TopoGenSimulator, calculate_reward, sort_dict_string
+    from UCT_for_CD_analytics.ucts.TopoPlanner import TopoGenSimulator, calculate_reward, sort_dict_string
 elif config.task == 'rs_5_comp':
     from UCT_5_only_epr_standard.ucts.TopoPlanner import TopoGenSimulator, calculate_reward, sort_dict_string
     from UCT_5_only_epr_standard.SimulatorAnalysis.gen_topo import key_circuit_from_lists, convert_to_netlist
 
-from topo_data.topoGraph import TopoGraph
-from topo_data.utils.graphUtils import nodes_and_edges_to_adjacency_matrix
+from topo_data_util.topoGraph import TopoGraph
+from topo_data_util.utils.graphUtils import nodes_and_edges_to_adjacency_matrix
 
 
 class SurrogateRewardTopologySim(TopoGenSimulator, ABC):
@@ -77,13 +77,14 @@ class SurrogateRewardTopologySim(TopoGenSimulator, ABC):
         else:
             self.query_counter += 1
 
-            eff = self.get_surrogate_eff(self.get_state())
-            vout = self.get_surrogate_vout(self.get_state())
+            # eff = self.get_surrogate_eff(self.get_state())
+            # vout = self.get_surrogate_vout(self.get_state())
+            eff, vout, reward, parameter = self.get_surrogate_reward(self.get_state())
 
             # an object for computing reward
-            eff_obj = {'efficiency': eff,
-                       'output_voltage': vout}
-            self.reward = calculate_reward(eff_obj)
+            # eff_obj = {'efficiency': eff,
+            #            'output_voltage': vout}
+            self.reward = reward
 
             if self.debug:
                 print('estimated reward {}, eff {}, vout {}'.format(self.reward, eff, vout))
@@ -102,6 +103,17 @@ class SurrogateRewardTopologySim(TopoGenSimulator, ABC):
 
     @abstractmethod
     def get_surrogate_vout(self, state):
+        """
+        return the vout prediction of state, and of self.get_state() if None
+        """
+        pass
+
+    def get_surrogate_reward(self, state):
+        """
+        return the vout prediction of state, and of self.get_state() if None
+        """
+        pass
+    def save_dataset_to_file(self, dataset):
         """
         return the vout prediction of state, and of self.get_state() if None
         """

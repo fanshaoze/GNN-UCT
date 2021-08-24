@@ -1,7 +1,7 @@
 import os
 
 import torch
-from ml_utils import initialize_model, optimize_reward
+from PM_GNN.code.ml_utils import initialize_model, optimize_reward
 import argparse
 
 import numpy as np

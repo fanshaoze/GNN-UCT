@@ -10,12 +10,12 @@ from SimulatorAnalysis.analytics import get_analytics_result
 
 
 def key_expression_dict(target_vout_min=-500, target_vout_max=500):
-    data_json_file = json.load(open("./SimulatorAnalysis/database/data.json"))
+    data_json_file = json.load(open("./UCT_for_CD_analytics/SimulatorAnalysis/database/data.json"))
     print(len(data_json_file))
-    expression_json_file = json.load(open("./SimulatorAnalysis/database/expression.json"))
+    expression_json_file = json.load(open("./UCT_for_CD_analytics/SimulatorAnalysis/database/expression.json"))
     print(len(expression_json_file))
     simu_results = []
-    with open("./SimulatorAnalysis/database/analytic.csv", "r") as csv_file:
+    with open("./UCT_for_CD_analytics/SimulatorAnalysis/database/analytic.csv", "r") as csv_file:
         csv_reader = csv.reader(csv_file)
         for row in csv_reader:
             simu_results.append(row)
@@ -69,7 +69,7 @@ def key_expression_dict(target_vout_min=-500, target_vout_max=500):
                     i += 1
                 break
         x += 1
-    with open('./SimulatorAnalysis/database/analytic-expression.json', 'w') as f:
+    with open('./UCT_for_CD_analytics/SimulatorAnalysis/database/analytic-expression.json', 'w') as f:
         json.dump(key_expression, f)
     f.close()
 
@@ -82,7 +82,7 @@ def save_one_analytics_result(key_expression):
 
 def generate_para_strs(device_list):
     para_strs = []
-    parameters = json.load(open("./SimulatorAnalysis/param.json"))
+    parameters = json.load(open("./UCT_for_CD_analytics/SimulatorAnalysis/param.json"))
     param2sweep, paramname = gen_param(device_list, parameters)
     # print(param2sweep)
     # print(paramname)
@@ -145,8 +145,8 @@ def find_one_analytics_result(key, key_expression, graph, comp2port_mapping, por
 def get_one_device_list(graph, comp2port_mapping, port2comp_mapping, idx_2_port, port_2_idx, parent, component_pool,
                         same_device_mapping, port_pool):
     name = "PCC-device-list"
-    directory_path = './SimulatorAnalysis/components_data_random'
-    target_folder = './SimulatorAnalysis/database'
+    directory_path = './UCT_for_CD_analytics/SimulatorAnalysis/components_data_random'
+    target_folder = './UCT_for_CD_analytics/SimulatorAnalysis/database'
     return_info_data_json = generate_one_data_json(name, directory_path, graph, comp2port_mapping, port2comp_mapping,
                                                    idx_2_port, port_2_idx, parent,
                                                    component_pool, same_device_mapping, port_pool)
@@ -163,8 +163,8 @@ def get_one_analytics_result(key_expression, graph, comp2port_mapping, port2comp
     para_result = {}
     pid_label = str(os.getpid())
     name = "PCC-" + pid_label
-    directory_path = './SimulatorAnalysis/components_data_random'
-    target_folder = './SimulatorAnalysis/database'
+    directory_path = './UCT_for_CD_analytics/SimulatorAnalysis/components_data_random'
+    target_folder = './UCT_for_CD_analytics/SimulatorAnalysis/database'
     return_info_data_json = generate_one_data_json(name, directory_path, graph, comp2port_mapping, port2comp_mapping,
                                                    idx_2_port, port_2_idx, parent,
                                                    component_pool, same_device_mapping, port_pool)
@@ -205,12 +205,12 @@ def get_one_analytics_result(key_expression, graph, comp2port_mapping, port2comp
 
 
 def read_analytics_result():
-    data_json_file = json.load(open("./SimulatorAnalysis/database/analytic-expression.json"))
+    data_json_file = json.load(open("./UCT_for_CD_analytics/SimulatorAnalysis/database/analytic-expression.json"))
     return data_json_file
 
 
 def save_analytics_result(simu_results):
-    with open('./SimulatorAnalysis/database/analytic-expression.json', 'w') as f:
+    with open('./UCT_for_CD_analytics/SimulatorAnalysis/database/analytic-expression.json', 'w') as f:
         json.dump(simu_results, f)
     f.close()
 

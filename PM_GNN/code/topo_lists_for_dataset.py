@@ -1,4 +1,4 @@
-from gen_topo_for_dateset import *
+from PM_GNN.code.gen_topo_for_dateset import *
 
 
 def generate_data_for_topo(circuit_topo):
@@ -6,13 +6,13 @@ def generate_data_for_topo(circuit_topo):
         convert_to_netlist(circuit_topo.graph, circuit_topo.component_pool, circuit_topo.port_pool,
                            circuit_topo.parent, circuit_topo.comp2port_mapping)
     data = {
-        "port_2_idx": port_2_idx,
-        "idx_2_port": idx_2_port,
-        "port_pool": port_pool,
-        "component_pool": component_pool,
-        "same_device_mapping": same_device_mapping,
-        "comp2port_mapping": comp2port_mapping,
-        "port2comp_mapping": port2comp_mapping,
+        "port_2_idx": circuit_topo.port_2_idx,
+        "idx_2_port": circuit_topo.idx_2_port,
+        "port_pool": circuit_topo.port_pool,
+        "component_pool": circuit_topo.component_pool,
+        "same_device_mapping": circuit_topo.same_device_mapping,
+        "comp2port_mapping": circuit_topo.comp2port_mapping,
+        "port2comp_mapping": circuit_topo.port2comp_mapping,
         "list_of_node": list_of_node,
         "list_of_edge": list_of_edge,
         "netlist": netlist,

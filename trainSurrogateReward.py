@@ -9,7 +9,7 @@ from algs.gp import GPModel
 from arguments import get_args
 
 import numpy as np
-from topo_data.embedding import embed_data
+from topo_data_util.embedding import embed_data
 
 from util import feed_random_seeds
 

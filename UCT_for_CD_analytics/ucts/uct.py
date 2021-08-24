@@ -208,9 +208,19 @@ class UCTPlanner(object):
 
         _leaf_value = 0
         _end_episode_value = 0
+        self.node_list = []
 
     def __del__(self):
         pass
+
+    def get_all_states(self):
+        all_states = []
+        for node in self.node_list:
+            state = node.state_
+            if not any(state.equal(s_) for s_ in all_states):
+                all_states.append(state)
+
+        return all_states
 
     def set_root_node(self, _state, _act_vect, _reward, _is_terminal):
         if self.root_ is not None:
@@ -253,7 +263,6 @@ class UCTPlanner(object):
         update_sim_lists = [[] for i in range(size)]
         if get_viz:
             node_list = [self.root_]  # for viz
-
             self.add_all_nodes_2_list(self.root_, node_list)
         current = self.root_
         self.sim_.set_state(current.state_)
@@ -365,6 +374,7 @@ class UCTPlanner(object):
                     next_node = current.node_vect_[act_ID].add_state_node(self.sim_.get_state(),
                                                                           self.sim_.get_actions(),
                                                                           r, self.sim_.is_terminal())
+                    self.node_list.append(next_node)
                     tree_size += 1
                     if -1 == self.max_depth_:
                         mc_return = self.MC_sampling_terminal(next_node)

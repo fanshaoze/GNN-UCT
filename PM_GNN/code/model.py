@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from torch_geometric.utils import to_networkx
 from torch_geometric.datasets import TUDataset
 from torch.utils.data.sampler import SubsetRandomSampler
-from topo_data import Autopo, split_balance_data
+from PM_GNN.code.topo_data import Autopo, split_balance_data
 import numpy as np
 import math
 import csv

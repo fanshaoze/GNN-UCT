@@ -1,13 +1,14 @@
-from gen_topo_for_dateset import *
+from PM_GNN.code.gen_topo_for_dateset import *
 
 
 def generate_topo_info(topo_data):
     list_of_node = topo_data['list_of_node']
     list_of_edge = topo_data['list_of_edge']
     netlist = topo_data['netlist']
-
-    key_list = key_circuit_for_single_topo(list_of_edge, list_of_node, netlist)
-    key = key_list[0]
+    # TODO has tuple problem
+    # key_list = key_circuit_for_single_topo(list_of_edge, list_of_node, netlist)
+    # key = key_list[0]
+    key = key_circuit_from_lists(list_of_edge, list_of_node, netlist)
 
     data = {
         "key": key,
