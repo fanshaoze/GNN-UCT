@@ -912,7 +912,7 @@ def try_cap_para(target_ins, candidate_cap_parameters, configs):
     """
     :param target_ins: the instance(just one) of the targets which has high efficiencies
     :param candidate_cap_parameters: candidate capacitor 0 parameters(list)
-    :param configs: config file
+    :param configs: config.py file
     :return: the capacitor parameter with the highest reward
     """
     from ucts.TopoPlanner import TopoGenAction, TopoGenSimulator, TopoGenState, calculate_reward
@@ -952,7 +952,7 @@ def try_ind_para(target_ins, candidate_ind_parameters, configs):
     """
     :param target_ins: the instance(just one) of the targets which has high efficiencies
     :param candidate_ind_parameters: candidate inductor 0 parameters(list)
-    :param configs: config file
+    :param configs: config.py file
     :return: the inductor parameter with the highest reward
     """
     from ucts.TopoPlanner import TopoGenAction, TopoGenSimulator, TopoGenState, calculate_reward
@@ -993,7 +993,7 @@ def adjusted_para_efficiency(target_ins, candidate_parameters, configs):
     """
     :param target_ins: the instance(just one) of the targets which has high efficiencies
     :param candidate_parameters: the dict with key: device, value: list of parameters that device can take
-    :param configs: config file
+    :param configs: config.py file
     :return: dict with key:list of parameter set, value : the efficiency that instance take this parameter set
     """
     para_efficiency_mapping = {}
@@ -1108,7 +1108,7 @@ def main(name):
     #
     #
     # configs = {}
-    # args_file_name = "../config"
+    # args_file_name = "../config.py"
     # get_args(args_file_name, configs)
     # sim_configs = get_sim_configs(configs)
     # final_targets = []

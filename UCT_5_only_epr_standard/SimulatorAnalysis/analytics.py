@@ -6,6 +6,7 @@ import json
 from SimulatorAnalysis.gen_topo import *
 import csv
 
+
 def get_analytics_information(target_folder, name, fix_paras=None):
     exp = json.load(open(target_folder + '/' + name + '-expr_val.json'))
     # parameters = json.load(open("param.json"))
@@ -157,11 +158,14 @@ def get_analytics_information(target_folder, name, fix_paras=None):
     return result
 
 
-
-def get_analytics_result(target_folder, name):
+def get_analytics_result(target_folder, name, duty_cycle=-1):
     exp = json.load(open(target_folder + '/' + name + '-expr_val.json'))
     # parameters = json.load(open("param.json"))
     parameters = json.load(open("./SimulatorAnalysis/param.json"))
+    if duty_cycle != -1:
+        parameters['Duty_Cycle'] = duty_cycle
+    else:
+        return None
 
     target_folder = './'
 

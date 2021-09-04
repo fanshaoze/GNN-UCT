@@ -85,9 +85,13 @@ def save_one_analytics_result(key_expression):
     pass
 
 
-def generate_para_strs(device_list):
+def generate_para_strs(device_list, duty_cycle):
     para_strs = []
     parameters = json.load(open("./SimulatorAnalysis/param.json"))
+    if duty_cycle != -1:
+        parameters['Duty_Cycle'] = [duty_cycle]
+    else:
+        return None
     param2sweep, paramname = gen_param(device_list, parameters)
     # print(param2sweep)
     # print(paramname)
@@ -105,7 +109,7 @@ def generate_para_strs(device_list):
 
 def find_one_analytics_result(key, key_expression, graph, comp2port_mapping, port2comp_mapping, idx_2_port, port_2_idx,
                               parent,
-                              component_pool, same_device_mapping, port_pool):
+                              component_pool, same_device_mapping, port_pool, duty_cycle=-1):
     """
     We use the key information to get one analytics' result
     :param key: uniquely representing a topology
@@ -122,16 +126,17 @@ def find_one_analytics_result(key, key_expression, graph, comp2port_mapping, por
     :return: analytics result
     """
     para_result = {}
-    if key + 'Invalid' in key_expression:
-        return {'None': [key_expression[key + '$' + 'Invalid']['Effiency'],
-                         key_expression[key + '$' + 'Invalid']['Vout']]}
+    if key + '-1' in key_expression:
+        return {-1: [key_expression[key + '$' + '-1']['Effiency'],
+                    key_expression[key + '$' + '-1']['Vout']]}
     else:
         find_flag = 0
         device_list = get_one_device_list(graph, comp2port_mapping, port2comp_mapping, idx_2_port, port_2_idx, parent,
                                           component_pool, same_device_mapping, port_pool)
         if not device_list:
             return None
-        paras_str = generate_para_strs(device_list)
+        paras_str = generate_para_strs(device_list, duty_cycle)
+        print(paras_str)
 
         for para_str in paras_str:
             paras = para_str[1:-2].split(',')
@@ -234,7 +239,7 @@ def simulate_one_analytics_result(analytics_info):
 
 def get_one_analytics_result(key_expression, graph, comp2port_mapping, port2comp_mapping, idx_2_port, port_2_idx,
                              parent, component_pool,
-                             same_device_mapping, port_pool, target_vout_min=-500):
+                             same_device_mapping, port_pool, duty_cycle=-1, target_vout_min=-500):
     para_result = {}
     pid_label = str(os.getpid())
     name = "PCC-" + pid_label
@@ -251,14 +256,14 @@ def get_one_analytics_result(key_expression, graph, comp2port_mapping, port2comp
     circuit = get_one_circuit(target_folder, name)
     expression = get_one_expression(target_folder, name)
     if expression == "invalid":
-        duty_cycle_para = "None"
+        duty_cycle_para = "-1"
         key_expression[key + '$' + str(duty_cycle_para)] = {}
         key_expression[key + '$' + str(duty_cycle_para)]['Expression'] = expression
         key_expression[key + '$' + str(duty_cycle_para)]['Efficiency'] = 0
         key_expression[key + '$' + str(duty_cycle_para)]['Vout'] = target_vout_min
 
     else:
-        simu_results = get_analytics_result(target_folder, name)
+        simu_results = get_analytics_result(target_folder, name, duty_cycle=duty_cycle)
         # print(simu_results)
         for i in range(len(simu_results)):
             # print("simu_results[i]: ", simu_results[i])

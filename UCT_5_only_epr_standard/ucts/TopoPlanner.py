@@ -334,7 +334,7 @@ class TopoGenState(uct.State):
             G.add_nodes_from(list_of_node)
             G.add_edges_from(list_of_edge)
             return self.check_have_no_GND_path() and (not has_short_cut) and self.has_in_out_gnd() and \
-                   self.has_all_ports() and nx.is_connected(G)
+                   self.has_all_ports() and nx.is_connected(G) and (self.parent is not None)
         else:
             return False
 

@@ -35,17 +35,17 @@ def get_args():
         '--debug', action='store_true', default=False, help='debug mode')
 
     parser.add_argument(
-        '--k', type=int, default=1, help='evaluate top k topos'
+        '--k-list', nargs='+', type=int, default=[20, 50], help='evaluate top k topos'
     )
     parser.add_argument(
         '--output', type=str, default='result', help='output json file name'
     )
 
     parser.add_argument(
-        '--model', type=str, default='gnn', choices=['simulator', 'transformer', 'gp'], help='surrogate model'
+        '--model', type=str, default='gnn', choices=['analytics', 'simulator', 'transformer', 'gp', 'gnn'], help='surrogate model'
     )
     parser.add_argument(
-        '--traj', nargs='+', type=int, default=[64], help='trajectory numbers'
+        '--traj', nargs='+', type=int, default=[50], help='trajectory numbers'
     )
 
     args = parser.parse_args()

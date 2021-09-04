@@ -4,6 +4,7 @@ from SimulatorAnalysis.gen_topo import *
 def get_one_circuit(target_folder, name):
     json_file = json.load(open(target_folder + '/' + name + '-data.json'))
     data = {}
+    # TODO note that we do not use duty cycle here, so duty cycle is not used as a parameter
     param = json.load(open("./SimulatorAnalysis/param.json"))
 
     for fn in json_file:

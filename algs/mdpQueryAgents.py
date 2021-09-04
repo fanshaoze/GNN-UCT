@@ -87,7 +87,7 @@ class EPUQueryAgent(QueryAgent):
                         else:
                             weights = [1, 0, 0, 0, 0]
                     else:
-                        raise Exception('unknown bias config in epu: ' + str(self.bias))
+                        raise Exception('unknown bias config.py in epu: ' + str(self.bias))
 
                 post_values = []
                 for idx, response in enumerate(responses):
@@ -145,7 +145,7 @@ class MeanRewardQueryAgent(QueryAgent):
                 else:
                     return min(self.test_x, key=lambda x: self.env.get_reward_mean(x))
             else:
-                raise Exception('unknown bias config in mean reward q agent: ' + str(self.bias))
+                raise Exception('unknown bias config.py in mean reward q agent: ' + str(self.bias))
 
 
 class MaxUncertainQueryAgent(QueryAgent):

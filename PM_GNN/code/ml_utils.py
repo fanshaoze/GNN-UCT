@@ -147,7 +147,7 @@ def train(train_loader, val_loader, model, n_epoch, batch_size, num_node, device
                 print(val_loss_ave, epoch)
                 epoch_min = epoch
                 min_val_loss = val_loss_ave
-            if epoch - epoch_min > 3:
+            if epoch - epoch_min > 5:
                 return model_copy
 
         train_perform.append(train_loss / n_batch_train / batch_size)

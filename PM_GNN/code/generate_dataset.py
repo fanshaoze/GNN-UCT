@@ -8,6 +8,8 @@ from PM_GNN.code.topo_lists_for_dataset import generate_data_for_topo
 
 def generate_topo_for_GNN_model(circuit_topo):
     parameters = json.load(open("PM_GNN/code/param.json"))
+    assert circuit_topo.parameters != -1
+    parameters['Duty_Cycle'] = [circuit_topo.parameters]
     topo_data = generate_data_for_topo(circuit_topo)
     data_info = generate_topo_info(topo_data)
     circuit_info = generate_circuit_info(data_info)  # cki

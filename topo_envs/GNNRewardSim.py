@@ -5,7 +5,7 @@ import torch
 
 from PM_GNN.code.topo_data import split_balance_data, Autopo
 from topo_envs.surrogateRewardSim import SurrogateRewardTopologySim
-from UCT_for_CD_analytics.ucts.TopoPlanner import TopoGenState, calculate_reward
+from UCT_for_CD_no_sweep.ucts.TopoPlanner import TopoGenState, calculate_reward
 from PM_GNN.code.generate_dataset import generate_topo_for_GNN_model
 from PM_GNN.code.ml_utils import get_output_with_model, initialize_model
 
@@ -29,7 +29,7 @@ class GNNRewardSim(SurrogateRewardTopologySim):
         # device_ = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         # model = initialize_model(model_index=1, gnn_nodes=100, pred_nodes=100, gnn_layers=3,
         #                          nf_size=4, ef_size=3, device=device_)
-        model = initialize_model(model_index=1, gnn_nodes=100, pred_nodes=3, gnn_layers=100,
+        model = initialize_model(model_index=1, gnn_nodes=100, pred_nodes=100, gnn_layers=3,
                                  nf_size=4, ef_size=3, device=self.device)
 
         pt_filename = y_select + '.pt'
@@ -43,6 +43,8 @@ class GNNRewardSim(SurrogateRewardTopologySim):
         return model
 
     def get_surrogate_reward(self, state: TopoGenState):
+        if state.parameters == -1:
+            return -1, -500, 0, -1
         os.system('rm ' + self.reg_data_folder + self.eff_y_select + '/processed/data.pt')
         os.system('rm ' + self.reg_data_folder + self.vout_y_select + '/processed/data.pt')
         raw_dataset = generate_topo_for_GNN_model(state)
@@ -69,14 +71,21 @@ class GNNRewardSim(SurrogateRewardTopologySim):
             out_vout_list.append(out_vout)
         # print(out_effi_list, out_vout_list)
 
-        print(out_effi_list)
-        print(out_vout_list)
+        # print(out_effi_list)
+        # print(out_vout_list)
+        eff = out_effi_list[0][0][0]
+        vout = 100 * out_vout_list[0][0][0]
+        eff_obj = {'efficiency': float(eff),
+                   'output_voltage': float(vout)}
+        reward = calculate_reward(eff_obj, self.configs_['target_vout'],
+                                  self.configs_['min_vout'],
+                                  self.configs_['max_vout'])
         os.system('rm ' + self.reg_data_folder + self.eff_y_select + '/processed/data.pt')
         os.system('rm ' + self.reg_data_folder + self.vout_y_select + '/processed/data.pt')
 
         # get max reward
 
-        return 0
+        return eff, vout, reward, state.parameters
 
     def save_dataset_to_file(self, dataset):
         with open(self.reg_data_folder + self.eff_y_select + '/' + self.raw_dataset_file, 'w') as f:
@@ -90,8 +99,11 @@ class GNNRewardSim(SurrogateRewardTopologySim):
         # TODO
         pass
 
-    def get_surrogate_eff(self, state):
+    def get_surrogate_eff(self, state: TopoGenState):
         """
         return the eff prediction of state, and of self.get_state() if None
         """
+        pass
+
+    def get_single_topo_sim_result(self, state: TopoGenState):
         pass
